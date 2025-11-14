@@ -1,0 +1,133 @@
+# GoReleaser configuration for Landing AI Go SDK
+# Documentation: https://goreleaser.com
+
+version: 2
+
+before:
+  hooks:
+    # You may remove this if you don't use go modules.
+    - go mod tidy
+    - go mod verify
+    # Run tests before building
+    - go test ./...
+
+builds:
+  # We don't build binaries for a library SDK
+  # GoReleaser will still create the release and handle Go module publishing
+  - skip: true
+
+archives:
+  - format: tar.gz
+    # This name template makes the OS and architecture compatible with the results of `uname`.
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
+    # Use zip for Windows archives
+    format_overrides:
+      - goos: windows
+        format: zip
+
+checksum:
+  name_template: 'checksums.txt'
+
+snapshot:
+  name_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  sort: asc
+  use: github
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+      - '^chore:'
+      - '^ci:'
+      - 'typo'
+      - 'Merge pull request'
+      - 'Merge branch'
+  groups:
+    - title: Features
+      regexp: '^.*?feat(\([[:word:]]+\))??!?:.+'
+      order: 0
+    - title: 'Bug fixes'
+      regexp: '^.*?fix(\([[:word:]]+\))??!?:.+'
+      order: 1
+    - title: 'Performance improvements'
+      regexp: '^.*?perf(\([[:word:]]+\))??!?:.+'
+      order: 2
+    - title: 'Refactoring'
+      regexp: '^.*?refactor(\([[:word:]]+\))??!?:.+'
+      order: 3
+    - title: 'Documentation'
+      regexp: '^.*?docs(\([[:word:]]+\))??!?:.+'
+      order: 4
+    - title: Others
+      order: 999
+
+release:
+  github:
+    owner: youssefsiam38
+    name: landingai
+  draft: false
+  prerelease: auto
+  mode: replace
+  header: |
+    ## Landing AI Go SDK {{ .Tag }}
+
+    This is the {{ .Tag }} release of the Landing AI Go SDK.
+
+    ### Installation
+
+    ```bash
+    go get github.com/youssefsiam38/landingai@{{ .Tag }}
+    ```
+
+    ### Usage
+
+    ```go
+    import "github.com/youssefsiam38/landingai"
+    ```
+
+  footer: |
+    ## What's Next?
+
+    - 📖 [Documentation](https://github.com/youssefsiam38/landingai/blob/main/README.md)
+    - 💡 [Examples](https://github.com/youssefsiam38/landingai/tree/main/examples)
+    - 🐛 [Report Issues](https://github.com/youssefsiam38/landingai/issues)
+    - 💬 [Discussions](https://github.com/youssefsiam38/landingai/discussions)
+
+    **Full Changelog**: https://github.com/youssefsiam38/landingai/compare/{{ .PreviousTag }}...{{ .Tag }}
+
+announce:
+  skip: '{{gt .Patch 0}}'
+
+# Metadata for the release
+metadata:
+  mod_timestamp: '{{ .CommitTimestamp }}'
+
+# Sign the release artifacts
+# signs:
+#   - cmd: gpg
+#     args:
+#       - "--batch"
+#       - "-u"
+#       - "{{ .Env.GPG_FINGERPRINT }}"
+#       - "--output"
+#       - "${signature}"
+#       - "--detach-sign"
+#       - "${artifact}"
+#     artifacts: checksum
+
+# Homebrew formula (optional - for future)
+# brews:
+#   - repository:
+#       owner: youssefsiam38
+#       name: homebrew-tap
+#     folder: Formula
+#     homepage: "https://github.com/youssefsiam38/landingai"
+#     description: "Go SDK for Landing AI ADE API"
+#     license: "MIT"
