@@ -3,7 +3,7 @@
 [![Go Reference](https://pkg.go.dev/badge/github.com/youssefsiam38/landingai.svg)](https://pkg.go.dev/github.com/youssefsiam38/landingai)
 [![Go Report Card](https://goreportcard.com/badge/github.com/youssefsiam38/landingai)](https://goreportcard.com/report/github.com/youssefsiam38/landingai)
 
-The official Go SDK for [Landing AI](https://landing.ai/)'s Agentic Document Extraction (ADE) API. Parse documents and spreadsheets into structured data with state-of-the-art AI models.
+Go SDK for [Landing AI](https://landing.ai/)'s Agentic Document Extraction (ADE) API. Parse documents and spreadsheets into structured data with state-of-the-art AI models.
 
 ## Features
 
